@@ -1,13 +1,17 @@
-vim.g.copilot_node_command = "/data/data/com.termux/files/usr/bin/node"
-vim.g.copilot_filetypes = {                                  ["*"] = true,
-}                                                          math.randomseed(os.time())
-                                                           vim.api.nvim_create_autocmd("User", {
+vim.api.nvim_create_autocmd("User", {
   pattern = "BDeletePost", -- buffer delete event (from mini.bufremove, etc)
-  callback = function()                                        -- If there are no other listed buffers open, show dashboard                                                          if #vim.fn.getbufinfo({ buflisted = 1 }) == 0 then
-      require("alpha").start(true)                             end
-  end,                                                     })
-                                                           --vim.g.copilot_node_command = "/data/data/com.termux/files/usr/bin/node"                                             
---[[                                                       
+  callback = function()
+    -- If there are no other listed buffers open, show dashboard
+    if #vim.fn.getbufinfo({ buflisted = 1 }) == 0 then
+      require("alpha").start(true)
+    end
+  end,
+})
+
+--vim.g.copilot_node_command = "/data/data/com.termux/files/usr/bin/node"
+
+--[[
+
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
@@ -249,6 +253,10 @@ vim.keymap.set("n", "<S-Tab>", "<Cmd>BufferLineCyclePrev<CR>", { desc = "Previou
 --
 vim.keymap.set("n", "<leader>d", ":Alpha<CR>", { desc = "Show Dashboard" })
 
+-- NOTE: The following keymaps are used to toggle the NvimTree file explorer.
+vim.keymap.set('n', '<leader>t', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -278,6 +286,23 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
+-- ADDED
+-- Turn off those long inline virtual texts
+vim.diagnostic.config({
+  virtual_text = false,
+                signs = true,      -- keep gutter signs
+                underline = true,  -- underline errors
+                update_in_insert = false,
+})
+
+-- Keymap: Show diagnostics in a floating window
+vim.keymap.set("n", "<leader>e", function()
+vim.diagnostic.open_float(nil, { focus = false, border = "rounded" })
+end, { desc = "Show error message" })
+-- Jump to next/prev diagnostic
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -290,6 +315,40 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+        -- foldable block of code
+        {
+          "kevinhwang91/nvim-ufo",
+          dependencies = { "kevinhwang91/promise-async" },
+          event = "BufReadPost", -- load only after buffer is ready
+          config = function()
+            vim.o.foldcolumn = "1" -- show fold column
+            vim.o.foldlevel = 99
+            vim.o.foldlevelstart = 99
+            vim.o.foldenable = true
+
+            -- use treesitter or indent as fallback
+            require("ufo").setup({
+              provider_selector = function(_, _, _)
+                return { "treesitter", "indent" }
+              end,
+            })
+
+            -- Keymaps
+            vim.keymap.set("n", "zR", require("ufo").openAllFolds)
+            vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
+            vim.keymap.set("n", "zp", require("ufo").peekFoldedLinesUnderCursor)
+          end,
+        },
+
+        -- boxing the bracket
+        {
+          "andymass/vim-matchup",
+          event = "BufReadPost",
+          config = function()
+            vim.g.matchup_matchparen_offscreen = { method = "popup" }
+          end,
+        },
+
         -- codewindow.nvim
         {
     "Isrothy/neominimap.nvim",
@@ -323,7 +382,15 @@ require('lazy').setup({
           -- The `lazy = false` is a good idea to make sure it's always available on startup.
           lazy = false,
           -- Optional: A command to trigger it. The default behavior is automatic.
-          cmd = "Copilot",
+          cmd = {
+                        "Copilot",
+            "CopilotSetup",
+            "CopilotChat",
+            "CopilotChatToggle",
+            "CopilotChatExplain",
+            "CopilotChatFix",
+            "CopilotChatReview",
+          },
           event = "InsertEnter", -- Load it when you enter insert mode
         },
   -- Your main Copilot Chat plugin configuration
@@ -338,7 +405,7 @@ require('lazy').setup({
     build = "make tiktoken",
     opts = {
       -- This combines all your options into a single table
-      model = "gpt-4",
+      -- model = "gpt-4",
       temperature = 0.1,
       auto_insert_mode = true, -- Enter insert mode when opening the chat
       debug = true, -- Good to keep this on for troubleshooting
@@ -354,6 +421,11 @@ require('lazy').setup({
         col = 0.25, -- Position from the left
         zindex = 100,
       },
+
+                        providers = {
+                                copilot = { enabled = true },
+                                github_models = { enabled = true },
+                        },
 
       -- Custom headers and separators
       headers = {
@@ -625,6 +697,7 @@ require('lazy').setup({
       }
   end
   },
+
   -- livecode.nvim
   {
     "jxm35/livecode.nvim",
@@ -724,6 +797,7 @@ require('lazy').setup({
           ScrollWheelDown = '<ScrollWheelDown> ',
           ScrollWheelUp = '<ScrollWheelUp> ',
           NL = '<NL> ',
+          BS = '<BS> ',
           BS = '<BS> ',
           Space = '<Space> ',
           Tab = '<Tab> ',
@@ -835,6 +909,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+                        vim.keymap.set("n", "<leader>sc", "<cmd>Telescope colorscheme<cr>", { desc = "[S]earch [C]olorscheme" })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
@@ -1024,6 +1099,7 @@ require('lazy').setup({
             end, '[T]oggle Inlay [H]ints')
           end
         end,
+       end,
       })
 
       -- Diagnostic Config
@@ -1137,6 +1213,35 @@ require('lazy').setup({
       }
     end,
   },
+
+        -- rainboe bracket
+        {
+          "HiPhish/rainbow-delimiters.nvim",
+          dependencies = { "nvim-treesitter/nvim-treesitter" },
+          config = function()
+            -- It works automatically after setup
+            local rainbow_delimiters = require("rainbow-delimiters")
+            vim.g.rainbow_delimiters = {
+              strategy = {
+                [""] = rainbow_delimiters.strategy["global"],
+                vim = rainbow_delimiters.strategy["local"],
+              },
+              query = {
+                [""] = "rainbow-delimiters",
+                lua = "rainbow-blocks",
+              },
+              highlight = {
+                "RainbowDelimiterRed",
+                "RainbowDelimiterYellow",
+                "RainbowDelimiterBlue",
+                "RainbowDelimiterOrange",
+                "RainbowDelimiterGreen",
+                "RainbowDelimiterViolet",
+                "RainbowDelimiterCyan",
+              },
+            }
+          end,
+        },
 
   { -- Autoformat
     'stevearc/conform.nvim',
@@ -1300,6 +1405,63 @@ require('lazy').setup({
     end,
   },
 
+        -- Catppuccin
+        {
+          "catppuccin/nvim",
+          name = "catppuccin",
+          priority = 1000,
+          config = function()
+            require("catppuccin").setup({
+              flavour = "mocha", -- or latte, frappe, macchiato
+            })
+            -- don’t set colorscheme here, keep it optional
+          end,
+        },
+
+        {
+          -- Gruvbox
+          { "ellisonleao/gruvbox.nvim", priority = 1000 },
+
+          -- Everforest
+          { "sainnhe/everforest", priority = 1000 },
+
+          -- Kanagawa
+          { "rebelot/kanagawa.nvim", priority = 1000 },
+
+          -- Rose Pine
+          { "rose-pine/neovim", name = "rose-pine", priority = 1000 },
+
+          -- OneDark
+          { "navarasu/onedark.nvim", priority = 1000 },
+
+          -- Dracula
+          { "Mofiqul/dracula.nvim", priority = 1000 },
+
+          -- Nightfox (includes duskfox, nordfox, carbonfox, etc)
+          { "EdenEast/nightfox.nvim", priority = 1000 },
+
+          -- Ayu
+          { "Shatur/neovim-ayu", priority = 1000 },
+
+          -- Edge (by sainnhe, same dev as everforest/gruvbox)
+          { "sainnhe/edge", priority = 1000 },
+
+          -- Material
+          { "marko-cerovac/material.nvim", priority = 1000 },
+
+          -- Poimandres
+          { "olivercederborg/poimandres.nvim", priority = 1000 },
+
+          -- Oxocarbon
+          { "nyoom-engineering/oxocarbon.nvim", priority = 1000 },
+
+          -- Melange
+          { "savq/melange-nvim", priority = 1000 },
+
+          -- Moonfly
+          { "bluz71/vim-moonfly-colors", name = "moonfly",priority = 1000 },
+  },
+
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -1412,20 +1574,19 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
-})
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
-
--- NOTE: The following keymaps are used to toggle the NvimTree file explorer.
-vim.keymap.set('n', '<C-e>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+})                                                         
+-- The line beneath this is called `modeline`. See `:help modeline`                                                   -- vim: ts=2 sts=2 sw=2 et
 
 -- notification
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     vim.notify("🎉 Welcome back, Parrot! Ready to build greatness?", "info", {
-      title = "Neovim",
-      timeout = 1500,
+      title = "Neovim",                                          timeout = 1500,
     })
   end,
+})
+                                                           -- boxing the bracket
+-- Make both brackets glow with a subtle background        vim.api.nvim_set_hl(0, "MatchParen", {
+  fg = "#00ffff",   -- cyan text                             bg = "#303030",   -- dark background = boxy effect
+  bold = true,
 })
