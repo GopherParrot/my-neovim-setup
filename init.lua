@@ -1099,7 +1099,6 @@ require('lazy').setup({
             end, '[T]oggle Inlay [H]ints')
           end
         end,
-       end,
       })
 
       -- Diagnostic Config
