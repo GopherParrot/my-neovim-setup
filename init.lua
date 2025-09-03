@@ -178,15 +178,15 @@ vim.o.list = true
 
 --[[
 vim.opt.listchars = {
-  tab = 'â”‚ ',
-  trail = 'Â·',
-  nbsp = 'â£'
+  tab = '│ ',
+  trail = '·',
+  nbsp = '␣'
 }
 vim.opt.wrap = true
 vim.opt.linebreak = true
-vim.opt.showbreak = 'â”‚ '
+vim.opt.showbreak = '│ '
 ]]
-vim.opt.listchars = { tab = 'Â» ', trail = 'Â·', nbsp = 'â£' }
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 -- Make tab arrows and trail dots dim
 vim.cmd [[
   highlight Whitespace guifg=#5c6370
@@ -416,7 +416,7 @@ require('lazy').setup({
 				width = 0.5,  -- Use relative width for better responsiveness
 				height = 0.8, -- Use relative height for better responsiveness
 				border = 'rounded',
-				title = 'ðŸ¤– Copilot Chat',
+				title = '🤖 Copilot Chat',
 				row = 0.1, -- Position from the top
 				col = 0.25, -- Position from the left
 				zindex = 100,
@@ -429,11 +429,11 @@ require('lazy').setup({
 
 			-- Custom headers and separators
 			headers = {
-				user = 'ðŸ‘¤ You: ',
-				assistant = 'ðŸ¤– Copilot: ',
-				tool = 'ðŸ”§ Tool: ',
+				user = '👤 You: ',
+				assistant = '🤖 Copilot: ',
+				tool = '🔧 Tool: ',
 			},
-			separator = 'â”', -- Using a single character separator looks cleaner
+			separator = '━', -- Using a single character separator looks cleaner
 			show_folds = false,
 		},
 
@@ -478,7 +478,7 @@ require('lazy').setup({
 					close_command = "bdelete! %d",
 					indicator = {
 						style = 'icon',
-						icon = 'â–Ž',
+						icon = '▎',
 					},
 					diagnostics = "nvim_lsp",
 					offsets = {
@@ -508,17 +508,17 @@ require('lazy').setup({
 				options = {
 					theme = 'tokyonight', -- Or catppuccin, onedark, gruvbox, etc.
 					icons_enabled = true,
-					component_separators = { left = 'î‚±', right = 'î‚³' },
-					section_separators = { left = 'î‚°', right = 'î‚²' }, -- THE TRIANGLES ðŸ”ºðŸ”»
+					component_separators = { left = '', right = '' },
+					section_separators = { left = '', right = '' }, -- THE TRIANGLES 🔺🔻
 					globalstatus = true, -- One big bar instead of per-split
 					-- disabled_filetypes = { 'alpha' }, -- Hide lualine on dashboard if you use one
 				},
 				sections = {
 					lualine_a = {
-						{ 'mode', icon = 'ï¯' } -- You can use ïŒƒ for Arch, ï² for triangle, etc
+						{ 'mode', icon = '' } -- You can use  for Arch,  for triangle, etc
 					},
 					lualine_b = {
-						{ 'branch', icon = 'îœ¥' },
+						{ 'branch', icon = '' },
 						'diff',
 						'diagnostics'
 					},
@@ -528,8 +528,8 @@ require('lazy').setup({
 							'filename',
 							path = 1, -- relative path
 							symbols = {
-								modified = ' â—', -- Text to show when file is modified
-								readonly = ' ï€£', -- Text to show when file is read-only
+								modified = ' ●', -- Text to show when file is modified
+								readonly = ' ', -- Text to show when file is read-only
 								unnamed = '[No Name]' -- Text to show when file has no name
 							}
 						}
@@ -657,13 +657,13 @@ require('lazy').setup({
 
 
 			dashboard.section.buttons.val = {
-				dashboard.button("f", "ó°±¼ Find File", ":Telescope find_files <CR>"),
-				dashboard.button("n", "î©¿ New File", ":enew <CR>"),
-				dashboard.button("s", "ó°„¡ Open Session", ":SessionLoadLast <CR>"),
-				dashboard.button("l", "ó°’² Lazy", ":Lazy <CR>"),
-				dashboard.button("e", "ó°™… Directory Tree", ":NvimTreeToggle <CR>"),
-				dashboard.button("c", "ó°’“ Config", ":e ~/.config/nvim/init.lua <CR>"),
-				dashboard.button("q", "ó°—¼ Quit", ":qa <CR>"),
+				dashboard.button("f", "󰱼 Find File", ":Telescope find_files <CR>"),
+				dashboard.button("n", " New File", ":enew <CR>"),
+				dashboard.button("s", "󰄡 Open Session", ":SessionLoadLast <CR>"),
+				dashboard.button("l", "󰒲 Lazy", ":Lazy <CR>"),
+				dashboard.button("e", "󰙅 Directory Tree", ":NvimTreeToggle <CR>"),
+				dashboard.button("c", "󰒓 Config", ":e ~/.config/nvim/init.lua <CR>"),
+				dashboard.button("q", "󰗼 Quit", ":qa <CR>"),
 			}
 
 			dashboard.section.footer.val = " "       -- Clear footer
@@ -752,7 +752,7 @@ require('lazy').setup({
 				add = { text = '+' },
 				change = { text = '~' },
 				delete = { text = '_' },
-				topdelete = { text = 'â€¾' },
+				topdelete = { text = '‾' },
 				changedelete = { text = '~' },
 			},
 		},
@@ -789,10 +789,10 @@ require('lazy').setup({
 					Down = '<Down> ',
 					Left = '<Left> ',
 					Right = '<Right> ',
-					C = '<C-â€¦> ',
-					M = '<M-â€¦> ',
-					D = '<D-â€¦> ',
-					S = '<S-â€¦> ',
+					C = '<C-…> ',
+					M = '<M-…> ',
+					D = '<D-…> ',
+					S = '<S-…> ',
 					CR = '<CR> ',
 					Esc = '<Esc> ',
 					ScrollWheelDown = '<ScrollWheelDown> ',
@@ -1110,10 +1110,10 @@ require('lazy').setup({
 				underline = { severity = vim.diagnostic.severity.ERROR },
 				signs = vim.g.have_nerd_font and {
 					text = {
-						[vim.diagnostic.severity.ERROR] = 'ó°…š ',
-						[vim.diagnostic.severity.WARN] = 'ó°€ª ',
-						[vim.diagnostic.severity.INFO] = 'ó°‹½ ',
-						[vim.diagnostic.severity.HINT] = 'ó°Œ¶ ',
+						[vim.diagnostic.severity.ERROR] = '󰅚 ',
+						[vim.diagnostic.severity.WARN] = '󰀪 ',
+						[vim.diagnostic.severity.INFO] = '󰋽 ',
+						[vim.diagnostic.severity.HINT] = '󰌶 ',
 					},
 				} or {},
 				virtual_text = {
@@ -1414,7 +1414,7 @@ require('lazy').setup({
 			require("catppuccin").setup({
 				flavour = "mocha", -- or latte, frappe, macchiato
 			})
-			-- donâ€™t set colorscheme here, keep it optional
+			-- don’t set colorscheme here, keep it optional
 		end,
 	},
 
@@ -1550,7 +1550,7 @@ require('lazy').setup({
 	--  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
 	-- { import = 'custom.plugins' },
 	--
-	-- For additional information with loading, sourcing and examples see `:help lazy.nvim-ðŸ”Œ-plugin-spec`
+	-- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
 	-- Or use telescope!
 	-- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
 	-- you can continue same window with `<space>sr` which resumes last telescope search
@@ -1559,19 +1559,19 @@ require('lazy').setup({
 		-- If you are using a Nerd Font: set icons to an empty table which will use the
 		-- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
 		icons = vim.g.have_nerd_font and {} or {
-			cmd = 'âŒ˜',
-			config = 'ðŸ› ',
-			event = 'ðŸ“…',
-			ft = 'ðŸ“‚',
-			init = 'âš™',
-			keys = 'ðŸ—',
-			plugin = 'ðŸ”Œ',
-			runtime = 'ðŸ’»',
-			require = 'ðŸŒ™',
-			source = 'ðŸ“„',
-			start = 'ðŸš€',
-			task = 'ðŸ“Œ',
-			lazy = 'ðŸ’¤ ',
+			cmd = '⌘',
+			config = '🛠',
+			event = '📅',
+			ft = '📂',
+			init = '⚙',
+			keys = '🗝',
+			plugin = '🔌',
+			runtime = '💻',
+			require = '🌙',
+			source = '📄',
+			start = '🚀',
+			task = '📌',
+			lazy = '💤 ',
 		},
 	},
 })
@@ -1580,7 +1580,7 @@ require('lazy').setup({
 -- notification
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()
-		vim.notify("ðŸŽ‰ Welcome back, Parrot! Ready to build greatness?", "info", {
+		vim.notify("🎉 Welcome back, Parrot! Ready to build greatness?", "info", {
 			title = "Neovim", timeout = 1500,
 		})
 	end,
