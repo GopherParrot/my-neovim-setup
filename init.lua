@@ -1584,8 +1584,10 @@ vim.api.nvim_create_autocmd("VimEnter", {
     })
   end,
 })
-                                                           -- boxing the bracket
--- Make both brackets glow with a subtle background        vim.api.nvim_set_hl(0, "MatchParen", {
-  fg = "#00ffff",   -- cyan text                             bg = "#303030",   -- dark background = boxy effect
+-- boxing the bracket
+-- Make both brackets glow with a subtle background        
+vim.api.nvim_set_hl(0, "MatchParen", {
+  fg = "#00ffff",   -- cyan text                             
+  bg = "#303030",   -- dark background = boxy effect
   bold = true,
 })
